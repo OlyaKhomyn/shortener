@@ -2,7 +2,7 @@ from datetime import datetime
 from importlib import import_module
 
 from django.core import serializers
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 from django.contrib.sessions.models import Session
@@ -18,6 +18,7 @@ SessionStore = engine.SessionStore
 
 
 class UrlView(View):
+
     def get(self, request):
         if not request.session.session_key:
             request.session = SessionStore()
@@ -38,8 +39,8 @@ class UrlView(View):
 
             url = Url(long_url=long_url, session=session)
             url.save()
-
-        return HttpResponseRedirect(self.request.path_info)
+            return HttpResponseRedirect(self.request.path_info)
+        return HttpResponse(status=400)
 
 
 class UrlRoot(View):
