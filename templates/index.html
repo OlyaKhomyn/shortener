@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="" method="post">
+    {% csrf_token %}
+    <p>Url: <input type="text" id="long_url" name="long_url"></p>
+    <p><input type="submit" value="Submit"></p>
+</form>
+{% for url in urls %}
+    <ul>
+        <li>Long url: <a href="{{ url.long_url }}" target="_blank">{{ url.long_url }}</a></li>
+        <li>Short url: <a href="{{ root }}{{ url.url_hash }}" target="_blank">{{ root }}{{ url.url_hash }}</a></li>
+        <li><a class="statistics" href="#" id="statistics{{ url.id }}" data-url_id="{{ url.id }}">Show statistics</a></li>
+        <ul id="stats{{ url.id }}"></ul>
+    </ul>
+{% endfor %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript">
+    $('.statistics').click(function(){
+    const url_id = $(this).attr("data-url_id");
+    const url = `/stats/${url_id}`
+    $.ajax(
+    {
+        type:"GET",
+        url: url,
+        success: function( data )
+        {
+            $( '#statistics'+ url_id ).remove();
+            let json = JSON.parse(data)
+            json.forEach(el => {
+                $( '#stats' + url_id).append(`<li>IP Address: ${el.fields['ip_address']};   Time: ${el.fields['time']};    Referer: ${el.fields['referer']}</li>`);
+            })
+        }
+     })
+});
+</script>
+</body>
+</html>
